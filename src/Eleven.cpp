@@ -93,7 +93,7 @@ void Eleven::removeLeadingZeros() {
         --newSize;
     }
     
-    if (newSize != size) {
+    if (newSize != size) { //перевыделяем память без вед нулей
         unsigned char* newDigits = new unsigned char[newSize];
         for (size_t i = 0; i < newSize; ++i) {
             newDigits[i] = digits[i];
@@ -135,14 +135,15 @@ bool Eleven::isEqual(const Eleven& other) const {
 
 // Проверка на больше
 bool Eleven::isGreater(const Eleven& other) const {
-    if (size > other.size) return true;
+    if (size > other.size) return true; // Число с большим количеством цифр больше
     if (size < other.size) return false;
     
+     // Сравниваем по цифрам с старшего разряда
     for (int i = size - 1; i >= 0; --i) {
         if (digits[i] > other.digits[i]) return true;
         if (digits[i] < other.digits[i]) return false;
     }
-    return false;
+    return false; // Равны
 }
 
 // Проверка на меньше
@@ -152,10 +153,10 @@ bool Eleven::isLess(const Eleven& other) const {
 
 // Сложение
 Eleven Eleven::add(const Eleven& other) const {
-    size_t maxSize = std::max(size, other.size) + 1;
+    size_t maxSize = std::max(size, other.size) + 1; // +1 для возможного переноса
     std::vector<unsigned char> result(maxSize, 0);
     
-    unsigned char carry = 0;
+    unsigned char carry = 0; // Перенос
     for (size_t i = 0; i < maxSize; ++i) {
         unsigned char sum = carry;
         if (i < size) sum += digits[i];
@@ -198,7 +199,7 @@ Eleven Eleven::subtract(const Eleven& other) const {
         if (i < other.size) diff -= other.digits[i];
         
         if (diff < 0) {
-            diff += 11;
+            diff += 11; // Занимаем из старшего разряда
             borrow = 1;
         } else {
             borrow = 0;
@@ -242,23 +243,23 @@ std::string Eleven::toString() const {
 // Оператор присваивания копированием
 Eleven& Eleven::operator=(const Eleven& other) {
     if (this != &other) {
-        delete[] digits;
+        delete[] digits;    // Освобождаем старую память
         size = other.size;
-        digits = new unsigned char[size];
+        digits = new unsigned char[size]; // Выделяем новую
         for (size_t i = 0; i < size; ++i) {
-            digits[i] = other.digits[i];
+            digits[i] = other.digits[i];  // Копируем цифры
         }
     }
     return *this;
 }
 
-// Оператор присваивания перемещением
+// Оператор присваивания перемещением (Не копирует данные, а перенаправляет указатели)
 Eleven& Eleven::operator=(Eleven&& other) noexcept {
     if (this != &other) {
         delete[] digits;
-        digits = other.digits;
+        digits = other.digits; // Перехватываем указатель
         size = other.size;
-        other.digits = nullptr;
+        other.digits = nullptr; // Обнуляем указатель исходного объекта
         other.size = 0;
     }
     return *this;

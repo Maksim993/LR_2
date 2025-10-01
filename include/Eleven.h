@@ -7,42 +7,42 @@
 
 class Eleven {
 private:
-    unsigned char* digits;  // Динамический массив цифр
-    size_t size;            // Размер числа (количество цифр)
+    unsigned char* digits;  // Массив цифр (0-10)
+    size_t size;            // Количество цифр
 
-    // Вспомогательные методы
-    void removeLeadingZeros(); // Удаление ведущих нулей
-    bool isValidDigit(unsigned char digit) const; // Проверка корректности цифры
+    // Внутренние вспомогательные методы
+    void removeLeadingZeros(); // Удалить нули в начале числа
+    bool isValidDigit(unsigned char digit) const; // Проверить что цифра от 0 до 10
 
 public:
     // Конструкторы
-    Eleven();                                      // По умолчанию
-    Eleven(const size_t& n, unsigned char t = 0); // Создание числа из n цифр
-    Eleven(const std::initializer_list<unsigned char>& t); // Из списка инициализации
-    Eleven(const std::string& t);                  // Из строки
-    Eleven(const Eleven& other);                   // Копирования
-    Eleven(Eleven&& other) noexcept;               // Перемещения
+    Eleven();                                      // Пустое число (0)
+    Eleven(const size_t& n, unsigned char t = 0); // Число из n одинаковых цифр
+    Eleven(const std::initializer_list<unsigned char>& t); // Из списка {1,2,3}
+    Eleven(const std::string& t);                  // Из строки "123"
+    Eleven(const Eleven& other);                   // Копирование
+    Eleven(Eleven&& other) noexcept;               // Перемещение
     
     // Деструктор
     virtual ~Eleven() noexcept;
 
-    // Методы доступа
+    // Геттеры
     size_t getSize() const;
     unsigned char* getDigits() const;
 
-    // Операции сравнения
-    bool isEqual(const Eleven& other) const;  // Равно
-    bool isGreater(const Eleven& other) const; // Больше
-    bool isLess(const Eleven& other) const;    // Меньше
+    // Сравнения
+    bool isEqual(const Eleven& other) const;  // ==
+    bool isGreater(const Eleven& other) const; // >
+    bool isLess(const Eleven& other) const;    // <
 
-    // Арифметические операции
-    Eleven add(const Eleven& other) const;     // Сложение
-    Eleven subtract(const Eleven& other) const; // Вычитание
+    // Арифметика
+    Eleven add(const Eleven& other) const;     // +
+    Eleven subtract(const Eleven& other) const; // -
     
-    // Вывод числа
+    // Преобразование в строку для вывода
     std::string toString() const;
 
-    // Оператор присваивания
+    // Операторы присваивания
     Eleven& operator=(const Eleven& other);
     Eleven& operator=(Eleven&& other) noexcept;
 };

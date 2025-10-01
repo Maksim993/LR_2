@@ -13,7 +13,7 @@ TEST(ElevenTest, StringConstructor) {
     EXPECT_EQ(num.toString(), "1A3");
 }
 
-// Тест конструктора из списка - ИСПРАВЛЕННЫЙ
+// Тест конструктора из списка
 TEST(ElevenTest, InitializerListConstructor) {
     // Используем числа вместо символов
     Eleven num({1, 10, 3}); // 1A3 в 11-ричной (1, 10, 3 вместо '1', 'A', '3')
