@@ -104,7 +104,6 @@ void Eleven::removeLeadingZeros() {
     }
 }
 
-// Проверка корректности цифры
 bool Eleven::isValidDigit(unsigned char digit) const {
     return digit <= 10;
 }
@@ -117,23 +116,18 @@ size_t Eleven::getSize() const {
 // Получение массива цифр
 unsigned char* Eleven::getDigits() const {
     unsigned char* copy = new unsigned char[size];
-    for (size_t i = 0; i < size; ++i) {
-        copy[i] = digits[i];
-    }
+    for (size_t i = 0; i < size; ++i) copy[i] = digits[i];
     return copy;
 }
 
-// Проверка на равенство
 bool Eleven::isEqual(const Eleven& other) const {
     if (size != other.size) return false;
-    
     for (size_t i = 0; i < size; ++i) {
         if (digits[i] != other.digits[i]) return false;
     }
     return true;
 }
 
-// Проверка на больше
 bool Eleven::isGreater(const Eleven& other) const {
     if (size > other.size) return true; // Число с большим количеством цифр больше
     if (size < other.size) return false;
@@ -146,12 +140,10 @@ bool Eleven::isGreater(const Eleven& other) const {
     return false; // Равны
 }
 
-// Проверка на меньше
 bool Eleven::isLess(const Eleven& other) const {
     return !isEqual(other) && !isGreater(other);
 }
 
-// Сложение
 Eleven Eleven::add(const Eleven& other) const {
     size_t maxSize = std::max(size, other.size) + 1; // +1 для возможного переноса
     std::vector<unsigned char> result(maxSize, 0);
@@ -161,7 +153,6 @@ Eleven Eleven::add(const Eleven& other) const {
         unsigned char sum = carry;
         if (i < size) sum += digits[i];
         if (i < other.size) sum += other.digits[i];
-        
         result[i] = sum % 11;
         carry = sum / 11;
     }
@@ -185,29 +176,21 @@ Eleven Eleven::add(const Eleven& other) const {
     return Eleven(resultStr.substr(start));
 }
 
-// Вычитание
 Eleven Eleven::subtract(const Eleven& other) const {
-    if (isLess(other)) {
-        throw std::invalid_argument("Cannot subtract larger number from smaller");
-    }
-    
+    if (isLess(other)) throw std::invalid_argument("Cannot subtract larger number from smaller");
     std::vector<unsigned char> result(size, 0);
     int borrow = 0;
-    
     for (size_t i = 0; i < size; ++i) {
         int diff = digits[i] - borrow;
         if (i < other.size) diff -= other.digits[i];
-        
         if (diff < 0) {
             diff += 11; // Занимаем из старшего разряда
             borrow = 1;
         } else {
             borrow = 0;
         }
-        
         result[i] = diff;
     }
-    
     // Преобразуем результат в строку
     std::string resultStr;
     for (int i = result.size() - 1; i >= 0; --i) {
@@ -217,7 +200,6 @@ Eleven Eleven::subtract(const Eleven& other) const {
             resultStr += 'A';
         }
     }
-    
     // Удаляем ведущие нули
     size_t start = resultStr.find_first_not_of('0');
     if (start == std::string::npos) {
@@ -243,7 +225,7 @@ std::string Eleven::toString() const {
 // Оператор присваивания копированием
 Eleven& Eleven::operator=(const Eleven& other) {
     if (this != &other) {
-        delete[] digits;    // Освобождаем старую память
+        delete[] digits; // Освобождаем старую память
         size = other.size;
         digits = new unsigned char[size]; // Выделяем новую
         for (size_t i = 0; i < size; ++i) {
@@ -252,14 +234,13 @@ Eleven& Eleven::operator=(const Eleven& other) {
     }
     return *this;
 }
-
-// Оператор присваивания перемещением (Не копирует данные, а перенаправляет указатели)
+// Оператор присваивания 
 Eleven& Eleven::operator=(Eleven&& other) noexcept {
     if (this != &other) {
         delete[] digits;
-        digits = other.digits; // Перехватываем указатель
+        digits = other.digits;// Перехватываем указатель
         size = other.size;
-        other.digits = nullptr; // Обнуляем указатель исходного объекта
+        other.digits = nullptr;// Обнуляем указатель исходного объекта
         other.size = 0;
     }
     return *this;

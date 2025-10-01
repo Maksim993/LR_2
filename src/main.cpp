@@ -5,7 +5,6 @@ void demonstrateOperations() {
     std::cout << "=== Демонстрация работы с одиннадцатеричными числами ===" << std::endl;
     
     try {
-        // Создание чисел только через строки - это самый надежный способ
         Eleven num1("146");     // 146 в 11-ричной = 1*121 + 4*11 + 6 = 171 в десятичной
         Eleven num2("123");     // 123 в 11-ричной = 1*121 + 2*11 + 3 = 146 в десятичной
         Eleven num3("555");     // 555 в 11-ричной
@@ -13,23 +12,19 @@ void demonstrateOperations() {
         std::cout << "num1: " << num1.toString() << " (в 11-ричной системе)" << std::endl;
         std::cout << "num2: " << num2.toString() << " (в 11-ричной системе)" << std::endl;
         std::cout << "num3: " << num3.toString() << " (в 11-ричной системе)" << std::endl;
-        
-        // Сравнения
+
         std::cout << "\n=== Сравнения ===" << std::endl;
         std::cout << "num1 == num2: " << (num1.isEqual(num2) ? "true" : "false") << std::endl;
         std::cout << "num1 > num2: " << (num1.isGreater(num2) ? "true" : "false") << std::endl;
         std::cout << "num1 < num2: " << (num1.isLess(num2) ? "true" : "false") << std::endl;
-        
-        // Арифметика
+
         std::cout << "\n=== Арифметика ===" << std::endl;
         Eleven sum = num1.add(num2);
         std::cout << num1.toString() << " + " << num2.toString() << " = " << sum.toString() << std::endl;
         
-        // Успешное вычитание (num1 > num2)
         Eleven diff1 = num1.subtract(num2);
         std::cout << num1.toString() << " - " << num2.toString() << " = " << diff1.toString() << std::endl;
         
-        // Пытаемся вычесть большее из меньшего (должна быть ошибка)
         try {
             Eleven diff2 = num2.subtract(num1);
             std::cout << num2.toString() << " - " << num1.toString() << " = " << diff2.toString() << std::endl;
@@ -85,7 +80,6 @@ void comparisonExamples() {
         std::cout << "A < 10: " << (num1.isLess(num2) ? "true" : "false") << std::endl;
         std::cout << "A > 10: " << (num1.isGreater(num2) ? "true" : "false") << std::endl;
         std::cout << "A == 10: " << (num1.isEqual(num2) ? "true" : "false") << std::endl;
-        
     } catch (const std::exception& e) {
         std::cerr << "Ошибка: " << e.what() << std::endl;
     }
@@ -94,13 +88,10 @@ void comparisonExamples() {
 int main() {
     std::cout << "Лабораторная работа №2: Класс для работы с 11-ричными числами" << std::endl;
     std::cout << "=============================================================" << std::endl;
-    
     demonstrateOperations();
     simpleExamples();
     comparisonExamples();
-    
     std::cout << "\n=============================================================" << std::endl;
     std::cout << "Демонстрация завершена успешно!" << std::endl;
-    
     return 0;
 }
