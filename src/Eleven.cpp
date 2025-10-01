@@ -2,246 +2,241 @@
 #include <stdexcept>
 #include <algorithm>
 
-// Конструктор по умолчанию - создает число 0
-Eleven::Eleven() : size(1) {
-    digits = new unsigned char[1];
-    digits[0] = 0;
+// пустое число
+Eleven::Eleven() : len(1) {
+    nums = new unsigned char[1];
+    nums[0] = 0;
 }
 
-// Конструктор с размером и значением
-Eleven::Eleven(const size_t& n, unsigned char t) : size(n) {
-    if (n == 0) throw std::invalid_argument("Size cannot be zero");
-    if (t > 10) throw std::invalid_argument("Digit must be between 0 and 10");
+// число из n одинаковых цифр
+Eleven::Eleven(const size_t& n, unsigned char t) : len(n) {
+    if (n == 0) throw std::invalid_argument("размер не может быть 0");
+    if (t > 10) throw std::invalid_argument("цифра должна быть от 0 до 10");
     
-    digits = new unsigned char[n];
-    for (size_t i = 0; i < n; ++i) {
-        digits[i] = t;
+    nums = new unsigned char[n];
+    for (size_t i = 0; i < n; i++) {
+        nums[i] = t;
     }
-    removeLeadingZeros();
+    trimZeros();
 }
 
-// Конструктор из списка инициализации - ИСПРАВЛЕННЫЙ (правильный порядок)
-Eleven::Eleven(const std::initializer_list<unsigned char>& t) {
-    size = t.size();
-    if (size == 0) throw std::invalid_argument("Initializer list cannot be empty");
+// из списка {1,2,3}
+Eleven::Eleven(const std::initializer_list<unsigned char>& items) {
+    len = items.size();
+    if (len == 0) throw std::invalid_argument("список не может быть пустым");
     
-    digits = new unsigned char[size];
+    nums = new unsigned char[len];
     
-    // Записываем цифры в обратном порядке (младшая цифра в начале)
-    size_t i = 0;
-    for (auto it = t.end() - 1; it >= t.begin(); --it) {
-        unsigned char digit = *it;
-        if (digit > 10) {
-            delete[] digits;
-            throw std::invalid_argument("Digit in list must be between 0 and 10");
+    size_t idx = 0;
+    for (auto it = items.end() - 1; it >= items.begin(); --it) {
+        unsigned char d = *it;
+        if (d > 10) {
+            delete[] nums;
+            throw std::invalid_argument("неверная цифра в списке");
         }
-        digits[i++] = digit;
-        if (i >= size) break; // Защита от переполнения
+        nums[idx++] = d;
+        if (idx >= len) break;
     }
-    removeLeadingZeros();
+    trimZeros();
 }
 
-// Конструктор из строки
-Eleven::Eleven(const std::string& t) {
-    if (t.empty()) throw std::invalid_argument("String cannot be empty");
+// из строки
+Eleven::Eleven(const std::string& s) {
+    if (s.empty()) throw std::invalid_argument("строка не может быть пустой");
     
-    size = t.length();
-    digits = new unsigned char[size];
+    len = s.length();
+    nums = new unsigned char[len];
     
-    for (size_t i = 0; i < size; ++i) {
-        char c = t[i];
-        unsigned char digit;
+    for (size_t i = 0; i < len; i++) {
+        char c = s[i];
+        unsigned char d;
         
         if (c >= '0' && c <= '9') {
-            digit = c - '0';
+            d = c - '0';
         } else if (c == 'A' || c == 'a') {
-            digit = 10;
+            d = 10;
         } else {
-            delete[] digits;
-            throw std::invalid_argument("Invalid character in string. Use 0-9 and A");
+            delete[] nums;
+            throw std::invalid_argument("неверный символ в строке");
         }
         
-        // Сохраняем в обратном порядке: младшая цифра в начале
-        digits[size - 1 - i] = digit;
+        nums[len - 1 - i] = d;
     }
-    removeLeadingZeros();
+    trimZeros();
 }
 
-// Конструктор копирования
-Eleven::Eleven(const Eleven& other) : size(other.size) {
-    digits = new unsigned char[size];
-    for (size_t i = 0; i < size; ++i) {
-        digits[i] = other.digits[i];
+// копирование
+Eleven::Eleven(const Eleven& other) : len(other.len) {
+    nums = new unsigned char[len];
+    for (size_t i = 0; i < len; i++) {
+        nums[i] = other.nums[i];
     }
 }
 
-// Конструктор перемещения
-Eleven::Eleven(Eleven&& other) noexcept : digits(other.digits), size(other.size) {
-    other.digits = nullptr;
-    other.size = 0;
+// перемещение
+Eleven::Eleven(Eleven&& other) noexcept : nums(other.nums), len(other.len) {
+    other.nums = nullptr;
+    other.len = 0;
 }
 
-// Деструктор
+// деструктор
 Eleven::~Eleven() noexcept {
-    delete[] digits;
+    delete[] nums;
 }
 
-// Удаление ведущих нулей
-void Eleven::removeLeadingZeros() {
-    size_t newSize = size;
-    while (newSize > 1 && digits[newSize - 1] == 0) {
-        --newSize;
+// убираем ведущие нули
+void Eleven::trimZeros() {
+    size_t new_len = len;
+    while (new_len > 1 && nums[new_len - 1] == 0) {
+        new_len--;
     }
     
-    if (newSize != size) { //перевыделяем память без вед нулей
-        unsigned char* newDigits = new unsigned char[newSize];
-        for (size_t i = 0; i < newSize; ++i) {
-            newDigits[i] = digits[i];
+    if (new_len != len) {
+        unsigned char* new_nums = new unsigned char[new_len];
+        for (size_t i = 0; i < new_len; i++) {
+            new_nums[i] = nums[i];
         }
-        delete[] digits;
-        digits = newDigits;
-        size = newSize;
+        delete[] nums;
+        nums = new_nums;
+        len = new_len;
     }
 }
 
-bool Eleven::isValidDigit(unsigned char digit) const {
-    return digit <= 10;
+size_t Eleven::length() const {
+    return len;
 }
 
-// Получение размера числа
-size_t Eleven::getSize() const {
-    return size;
-}
-
-// Получение массива цифр
-unsigned char* Eleven::getDigits() const {
-    unsigned char* copy = new unsigned char[size];
-    for (size_t i = 0; i < size; ++i) copy[i] = digits[i];
+unsigned char* Eleven::getNums() const {
+    unsigned char* copy = new unsigned char[len];
+    for (size_t i = 0; i < len; i++) copy[i] = nums[i];
     return copy;
 }
 
-bool Eleven::isEqual(const Eleven& other) const {
-    if (size != other.size) return false;
-    for (size_t i = 0; i < size; ++i) {
-        if (digits[i] != other.digits[i]) return false;
+bool Eleven::equals(const Eleven& other) const {
+    if (len != other.len) return false;
+    for (size_t i = 0; i < len; i++) {
+        if (nums[i] != other.nums[i]) return false;
     }
     return true;
 }
 
-bool Eleven::isGreater(const Eleven& other) const {
-    if (size > other.size) return true; // Число с большим количеством цифр больше
-    if (size < other.size) return false;
+bool Eleven::greater(const Eleven& other) const {
+    if (len > other.len) return true;
+    if (len < other.len) return false;
     
-     // Сравниваем по цифрам с старшего разряда
-    for (int i = size - 1; i >= 0; --i) {
-        if (digits[i] > other.digits[i]) return true;
-        if (digits[i] < other.digits[i]) return false;
+    for (int i = len - 1; i >= 0; i--) {
+        if (nums[i] > other.nums[i]) return true;
+        if (nums[i] < other.nums[i]) return false;
     }
-    return false; // Равны
+    return false;
 }
 
-bool Eleven::isLess(const Eleven& other) const {
-    return !isEqual(other) && !isGreater(other);
+bool Eleven::less(const Eleven& other) const {
+    return !equals(other) && !greater(other);
 }
 
-Eleven Eleven::add(const Eleven& other) const {
-    size_t maxSize = std::max(size, other.size) + 1; // +1 для возможного переноса
-    std::vector<unsigned char> result(maxSize, 0);
+// сложение
+Eleven Eleven::plus(const Eleven& other) const {
+    size_t max_len = std::max(len, other.len) + 1;
+    std::vector<unsigned char> res(max_len, 0);
     
-    unsigned char carry = 0; // Перенос
-    for (size_t i = 0; i < maxSize; ++i) {
+    unsigned char carry = 0;
+    for (size_t i = 0; i < max_len; i++) {
         unsigned char sum = carry;
-        if (i < size) sum += digits[i];
-        if (i < other.size) sum += other.digits[i];
-        result[i] = sum % 11;
+        if (i < len) sum += nums[i];
+        if (i < other.len) sum += other.nums[i];
+        res[i] = sum % 11;
         carry = sum / 11;
     }
     
-    // Преобразуем результат в строку
-    std::string resultStr;
-    for (int i = result.size() - 1; i >= 0; --i) {
-        if (result[i] < 10) {
-            resultStr += '0' + result[i];
+    // в строку
+    std::string s;
+    for (int i = res.size() - 1; i >= 0; i--) {
+        if (res[i] < 10) {
+            s += '0' + res[i];
         } else {
-            resultStr += 'A';
+            s += 'A';
         }
     }
     
-    // Удаляем ведущие нули
-    size_t start = resultStr.find_first_not_of('0');
+    // убираем нули в начале
+    size_t start = s.find_first_not_of('0');
     if (start == std::string::npos) {
         return Eleven("0");
     }
     
-    return Eleven(resultStr.substr(start));
+    return Eleven(s.substr(start));
 }
 
-Eleven Eleven::subtract(const Eleven& other) const {
-    if (isLess(other)) throw std::invalid_argument("Cannot subtract larger number from smaller");
-    std::vector<unsigned char> result(size, 0);
+// вычитание
+Eleven Eleven::minus(const Eleven& other) const {
+    if (less(other)) throw std::invalid_argument("нельзя вычитать большее число");
+    
+    std::vector<unsigned char> res(len, 0);
     int borrow = 0;
-    for (size_t i = 0; i < size; ++i) {
-        int diff = digits[i] - borrow;
-        if (i < other.size) diff -= other.digits[i];
+    
+    for (size_t i = 0; i < len; i++) {
+        int diff = nums[i] - borrow;
+        if (i < other.len) diff -= other.nums[i];
         if (diff < 0) {
-            diff += 11; // Занимаем из старшего разряда
+            diff += 11;
             borrow = 1;
         } else {
             borrow = 0;
         }
-        result[i] = diff;
+        res[i] = diff;
     }
-    // Преобразуем результат в строку
-    std::string resultStr;
-    for (int i = result.size() - 1; i >= 0; --i) {
-        if (result[i] < 10) {
-            resultStr += '0' + result[i];
+    
+    // в строку
+    std::string s;
+    for (int i = res.size() - 1; i >= 0; i--) {
+        if (res[i] < 10) {
+            s += '0' + res[i];
         } else {
-            resultStr += 'A';
+            s += 'A';
         }
     }
-    // Удаляем ведущие нули
-    size_t start = resultStr.find_first_not_of('0');
+    
+    // убираем нули в начале
+    size_t start = s.find_first_not_of('0');
     if (start == std::string::npos) {
         return Eleven("0");
     }
     
-    return Eleven(resultStr.substr(start));
+    return Eleven(s.substr(start));
 }
 
-// Преобразование в строку
-std::string Eleven::toString() const {
-    std::string result;
-    for (int i = size - 1; i >= 0; --i) {
-        if (digits[i] < 10) {
-            result += '0' + digits[i];
+std::string Eleven::to_string() const {
+    std::string s;
+    for (int i = len - 1; i >= 0; i--) {
+        if (nums[i] < 10) {
+            s += '0' + nums[i];
         } else {
-            result += 'A';
+            s += 'A';
         }
     }
-    return result;
+    return s;
 }
 
-// Оператор присваивания копированием
 Eleven& Eleven::operator=(const Eleven& other) {
     if (this != &other) {
-        delete[] digits; // Освобождаем старую память
-        size = other.size;
-        digits = new unsigned char[size]; // Выделяем новую
-        for (size_t i = 0; i < size; ++i) {
-            digits[i] = other.digits[i];  // Копируем цифры
+        delete[] nums;
+        len = other.len;
+        nums = new unsigned char[len];
+        for (size_t i = 0; i < len; i++) {
+            nums[i] = other.nums[i];
         }
     }
     return *this;
 }
-// Оператор присваивания 
+
 Eleven& Eleven::operator=(Eleven&& other) noexcept {
     if (this != &other) {
-        delete[] digits;
-        digits = other.digits;// Перехватываем указатель
-        size = other.size;
-        other.digits = nullptr;// Обнуляем указатель исходного объекта
-        other.size = 0;
+        delete[] nums;
+        nums = other.nums;
+        len = other.len;
+        other.nums = nullptr;
+        other.len = 0;
     }
     return *this;
 }

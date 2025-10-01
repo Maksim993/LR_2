@@ -2,37 +2,41 @@
 #define ELEVEN_H
 
 #include <iostream>
-#include <string>
 #include <vector>
 
 class Eleven {
-private:
-    unsigned char* digits;  // Массив цифр (0-10)
-    size_t size;            // Количество цифр
-
-    // Внутренние вспомогательные методы
-    void removeLeadingZeros();
-    bool isValidDigit(unsigned char digit) const; 
-public:
-    // Конструкторы
-    Eleven();                                      // Пустое число (0)
-    Eleven(const size_t& n, unsigned char t = 0); // Число из n одинаковых цифр
-    Eleven(const std::initializer_list<unsigned char>& t); // Из списка {1,2,3}
-    Eleven(const std::string& t);                  // Из строки "123"
-    Eleven(const Eleven& other);                   // Копирование
-    Eleven(Eleven&& other) noexcept;               // Перемещение
+    unsigned char* nums;  // цифры числа
+    size_t len;           // длина числа
     
-    virtual ~Eleven() noexcept;
-    size_t getSize() const;
-    unsigned char* getDigits() const;
-
-    bool isEqual(const Eleven& other) const;
-    bool isGreater(const Eleven& other) const; 
-    bool isLess(const Eleven& other) const; 
-    Eleven add(const Eleven& other) const;     
-    Eleven subtract(const Eleven& other) const;
-    std::string toString() const;
+    void trimZeros();
+    
+public:
+    // конструкторы
+    Eleven();
+    Eleven(const size_t& n, unsigned char t = 0);
+    Eleven(const std::initializer_list<unsigned char>& items);
+    Eleven(const std::string& s);
+    Eleven(const Eleven& other);
+    Eleven(Eleven&& other) noexcept;
+    
+    ~Eleven() noexcept;
+    
+    // основные методы
+    size_t length() const;
+    unsigned char* getNums() const;
+    
+    bool equals(const Eleven& other) const;
+    bool greater(const Eleven& other) const;
+    bool less(const Eleven& other) const;
+    
+    Eleven plus(const Eleven& other) const;
+    Eleven minus(const Eleven& other) const;
+    
+    std::string to_string() const;
+    
+    // операторы присваивания
     Eleven& operator=(const Eleven& other);
     Eleven& operator=(Eleven&& other) noexcept;
 };
+
 #endif
